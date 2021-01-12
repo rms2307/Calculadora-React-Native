@@ -1,34 +1,18 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- * @flow strict-local
- */
-
-import React from 'react'
+import React, { useState } from 'react'
 import {
-  SafeAreaView,
   StyleSheet,
-  ScrollView,
   View,
-  Text,
-  StatusBar,
 } from 'react-native'
 
-import {
-  Header,
-  LearnMoreLinks,
-  Colors,
-  DebugInstructions,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen'
-
 import Button from './src/components/Button'
+import Display from './src/components/Display'
 
-const App: () => React$Node = () => {
+export default () => {
+  const [displayValue, setDisplayValue] = useState(0)
+
   return (
     <View style={styles.container}>
+      <Display value={displayValue} />
       <View style={styles.buttons}>
         <Button label='AC' />
         <Button label='/' />
@@ -61,5 +45,3 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
   }
 })
-
-export default App
