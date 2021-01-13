@@ -7,24 +7,70 @@ import {
 import Button from './src/components/Button'
 import Display from './src/components/Display'
 
-export default () => {
-  const [displayValue, setDisplayValue] = useState(0)
+const initialState = {
+  displayValue: '0',
+  clearDisplay: false,
+  operation: null,
+  values: [0, 0],
+  current: 0,
+}
 
-  addDigit = (n) => {
-    setDisplayValue(n)
+export default () => {
+  const [state, setState] = useState(initialState)
+
+  addDigit = n => {
+    const clearDisplay = state.displayValue === '0'
+      || state.clearDisplay
+
+    if (n === '.' && !clearDisplay && state.displayValue.includes('.')) {
+      return
+    }
+
+    const currentValue = clearDisplay ? '' : state.displayValue
+    const displayValue = currentValue + n
+    setState({ ...state, displayValue, clearDisplay: false })
+
+    if (n !== '.') {
+      const newValue = parseFloat(displayValue)
+      const values = [...state.values]
+      values[state.current] = newValue
+      setState({ ...state, values, displayValue, clearDisplay: false })
+    }
   }
 
   cleanMemory = () => {
-    setDisplayValue(0)
+    setState({ ...initialState })
   }
 
   setOperation = operation => {
+    if (state.current === 0) {
+      setState({ ...state, operation, current: 1, clearDisplay: true })
+    } else {
+      const equals = operation === '='
+      const values = [...state.values]
+
+      try {
+        values[0] = eval(`${values[0]} ${state.operation} ${values[1]}`)
+      } catch (e) {
+        values[0] = state.values[0]
+      }
+
+      values[1] = 0
+      setState({
+        ...state,
+        displayValue: `${values[0]}`,
+        operation: equals ? null : operation,
+        current: equals ? 0 : 1,
+        clearDisplay: true,
+        values,
+      })
+    }
 
   }
 
   return (
     <View style={styles.container}>
-      <Display value={displayValue} />
+      <Display value={state.displayValue} />
       <View style={styles.buttons}>
         <Button label='AC' triple onClick={cleanMemory} />
         <Button label='/' operation onClick={setOperation} />
